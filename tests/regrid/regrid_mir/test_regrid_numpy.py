@@ -373,3 +373,31 @@ def test_regrid_numpy_any_to_points(interpolation, in_grid, in_shape):
     out_grid = {"latitudes": lats, "longitudes": lons}
     res_v, _ = regrid_array(values, in_grid=in_grid, out_grid=out_grid, interpolation=interpolation)
     assert res_v.shape == (len(lats),), f"Expected shape {(len(lats), len(lons))}, got {res_v.shape}"
+
+
+@pytest.mark.skipif(NO_MIR, reason="No mir available")
+def test_regrid_numpy_mir_option_area():
+    values = np.random.random((37, 72))
+    v_res, grid_res = regrid_array(
+        values,
+        in_grid={"grid": [5, 5]},
+        out_grid={"grid": [1, 1]},
+        interpolation="nearest-neighbour",
+        area=[50, 0, 40, 10],
+    )
+    assert v_res.shape == (11, 11)
+    assert grid_res["area"] == [50, 0, 40, 10]
+
+
+@pytest.mark.skipif(NO_MIR, reason="No mir available")
+def test_regrid_numpy_mir_option_bad_value():
+    # the option reaches MIR, which rejects the value
+    values = np.random.random((37, 72))
+    with pytest.raises(RuntimeError):
+        regrid_array(
+            values,
+            in_grid={"grid": [5, 5]},
+            out_grid={"grid": [1, 1]},
+            interpolation="nearest-neighbour",
+            area="garbage",
+        )
