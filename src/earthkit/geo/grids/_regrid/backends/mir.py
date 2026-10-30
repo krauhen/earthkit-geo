@@ -131,6 +131,7 @@ class MirBackend(Backend):
         in_grid,
         out_grid,
         interpolation="linear",
+        **kwargs,
     ):
         """Interpolate an array from ``in_grid`` onto ``out_grid`` via MIR.
 
@@ -145,6 +146,9 @@ class MirBackend(Backend):
         interpolation : str, default="linear"
             The interpolation method (e.g. ``"linear"``, ``"grid-box-average"``,
             ``"nearest-neighbour"``).
+        **kwargs : dict
+            Extra MIR job options (e.g. ``area``, ``rotation``), each passed
+            to ``mir.Job.set``. Invalid values are rejected by MIR.
 
         Returns
         -------
@@ -155,14 +159,15 @@ class MirBackend(Backend):
         import mir
         import numpy as np
 
-        kwargs = {
-            "interpolation": interpolation,
-        }
-
         in_grid = self.get_grid_spec(in_grid)
         out_grid = self.get_grid_spec(out_grid)
 
-        out_grid, kwargs = self.adjust_options(out_grid, {})
+        kwargs = {
+            "interpolation": interpolation,
+            **kwargs,
+        }
+
+        out_grid, kwargs = self.adjust_options(out_grid, kwargs)
 
         # mir.ArrayInput requires a C-contiguous array but apply_ufunc's dim
         # reordering can produce non-contiguous views. No-op if already contiguous.
@@ -173,7 +178,6 @@ class MirBackend(Backend):
 
         job = mir.Job()
         job.set("grid", out_grid)
-        job.set("interpolation", interpolation)  # NOTE: needs generalisation
         for k, v in kwargs.items():
             job.set(k, v)
 
@@ -187,6 +191,7 @@ class MirBackend(Backend):
         message,
         out_grid,
         interpolation="linear",
+        **kwargs,
     ):
         """Interpolate a GRIB message directly onto ``out_grid`` via MIR.
 
@@ -198,6 +203,8 @@ class MirBackend(Backend):
             The output grid spec.
         interpolation : str, default="linear"
             The interpolation method.
+        **kwargs : dict
+            Extra MIR job options, each passed to ``mir.Job.set``.
 
         Returns
         -------
@@ -212,6 +219,7 @@ class MirBackend(Backend):
 
         kwargs = {
             "interpolation": interpolation,
+            **kwargs,
         }
 
         # no 'automatic' necessary

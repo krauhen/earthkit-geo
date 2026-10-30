@@ -70,6 +70,8 @@ def regrid(
 
     **kwargs
         Additional keyword arguments depending on data type, interpolation or backend.
+        With the "mir" backend they are passed to MIR as job options (e.g. ``area``,
+        ``rotation``).
 
 
     Returns

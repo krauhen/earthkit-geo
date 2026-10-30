@@ -24,6 +24,8 @@ regrid (array-level) with MIR
         - "nearest-neighbour": choose a nearest neighbouring input point to define output point value. This is the recommended method for :ref:`unstructured <gridspec-unstructured>` grids.
 
     :type interpolation: str
+    :param kwargs: Additional MIR job options (e.g. ``area``, ``rotation``), passed to MIR as given.
+    :type kwargs: dict
 
     :return: Return a tuple with the interpolated values and the :ref:`gridspec <gridspec>` of the output grid. This latter might be different than the one specified in ``out_grid`` because MIR can perform normalisation and other adjustments on it.
     :rtype: tuple of ndarray and dict
